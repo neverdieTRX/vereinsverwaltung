@@ -15,6 +15,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Service der sich um die Kontoverwaltung kümmert.
+ *
+ * @author [MLA] Marcus Lanvers | Marcus.Lanvers@LMIS.de
+ */
 @Service
 public class AccountService {
 
@@ -36,6 +41,9 @@ public class AccountService {
         this.userService = userService;
     }
 
+    /**
+     * Überträgt für jeden Nutzer die Monatsgebühr auf das Vereinskonto.
+     */
     public void transferMonthly() {
         List<User> users = this.userService.findAll();
         users.stream().forEach(this::transferFeeOfUser);
@@ -62,15 +70,24 @@ public class AccountService {
         this.accountRepository.save(account);
     }
 
+    /**
+     * Gibt den aktuellen Vereinskontostand zurück.
+     *
+     * @return -
+     */
     public double getOrganisationBalance() {
         Account account = this.accountRepository.findByIban(this.organisationIban);
         return account.getBalance();
 
     }
 
-    public void getStatementsByOptionalDates() {
-    }
-
+    /**
+     * Gibt die Kontoauszüge des Vereinskontos zurück, falls vorhanden gefiltert nach dem übergebenen Zeitrahmen.
+     *
+     * @param beginn -
+     * @param end    -
+     * @return -
+     */
     public List<Statement> getStatementsByOptionalDates(Optional<LocalDate> beginn, Optional<LocalDate> end) {
         List<Statement> statements = this.accountRepository.findByIban(this.organisationIban).getStatements();
         if (!beginn.isPresent() || end.isPresent()) {
@@ -82,10 +99,20 @@ public class AccountService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Erstellt ein Konto.
+     *
+     * @param account -
+     */
     void create(Account account) {
         this.accountRepository.save(account);
     }
 
+    /**
+     * Gibt alle Konten zurück.
+     *
+     * @return -
+     */
     List<Account> findAll() {
         return this.accountRepository.findAll();
     }

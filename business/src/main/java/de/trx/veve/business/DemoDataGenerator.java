@@ -11,6 +11,11 @@ import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+/**
+ * Generiert Demodaten bei Applikationsstart.
+ *
+ * @author [MLA] Marcus Lanvers | Marcus.Lanvers@LMIS.de
+ */
 @Component
 public class DemoDataGenerator {
 

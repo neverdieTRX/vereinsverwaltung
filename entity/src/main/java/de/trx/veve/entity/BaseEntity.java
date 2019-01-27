@@ -5,10 +5,16 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 
+/**
+ * Abstrakte Basisentität welche die DatenbankId kapselt.
+ *
+ * @author [MLA] Marcus Lanvers | Marcus.Lanvers@LMIS.de
+ */
 @MappedSuperclass
 public abstract class BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 7795296740526497268L;
+
     @Id
     @GeneratedValue
     private Long id;

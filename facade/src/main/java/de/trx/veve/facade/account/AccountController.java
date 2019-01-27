@@ -11,6 +11,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 
+/**
+ * Restschnittstelle für Kontofunktionalitäten.
+ *
+ * @author [MLA] Marcus Lanvers | Marcus.Lanvers@LMIS.de
+ */
 @RestController
 @RequestMapping(value = "/api/account")
 @Component
@@ -23,18 +28,33 @@ public class AccountController {
         this.accountService = accountService;
     }
 
+    /**
+     * Überweist bei Aufruf die Montasgebühr aller Vereinsmitglieder auf das Vereinskonto.
+     */
     @CrossOrigin
     @RequestMapping(value = "/transfer", method = RequestMethod.POST)
     public void transferMonthly() {
         this.accountService.transferMonthly();
     }
 
+    /**
+     * Gibt den aktuellen Kontostand des Vereins zurück.
+     *
+     * @return -
+     */
     @CrossOrigin
     @RequestMapping(value = "/balance/organisation", method = RequestMethod.GET)
     public double getOrganisationBalance() {
         return this.accountService.getOrganisationBalance();
     }
 
+    /**
+     * Gibt die Vereinskonto Zu- und Abgänge zurück. Filtert bei vorhandenen Beginn und Enddatum nach dem
+     * übergebenen Zeitrahmen.
+     *
+     * @param statementDatesDTO -
+     * @return -
+     */
     @CrossOrigin
     @RequestMapping(value = "/statements", method = RequestMethod.GET, consumes = "application/json")
     public List<StatementDTO> findStatements(@RequestBody StatementDatesDTO statementDatesDTO) {

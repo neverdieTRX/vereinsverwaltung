@@ -5,13 +5,28 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import java.util.List;
 
+/**
+ * Bankkonto.
+ *
+ * @author [MLA] Marcus Lanvers | Marcus.Lanvers@LMIS.de
+ */
 @Entity
 public class Account extends BaseEntity {
 
     private static final long serialVersionUID = -1267880751292654877L;
+    /**
+     * Iban
+     */
     private String iban;
+
+    /**
+     * Kontostand
+     */
     private double balance;
 
+    /**
+     * Konto zu- und abgänge
+     */
     @ElementCollection
     @Embedded
     private List<Statement> statements;

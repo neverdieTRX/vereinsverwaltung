@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 
 /**
- * Logger der sich zwischen die Methondenaufrufe der Facade und der BusinessMethoden einklingt.
+ * Logger der sich zwischen die Methondenaufrufe der Facade und der Businessmethoden einklingt.
  *
  * @author [MLA] Marcus Lanvers | Marcus.Lanvers@LMIS.de
  */

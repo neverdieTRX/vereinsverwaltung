@@ -2,16 +2,36 @@ package de.trx.veve.entity;
 
 import javax.persistence.Embeddable;
 
+/**
+ * Eine Wohnadresse.
+ *
+ * @author [MLA] Marcus Lanvers | Marcus.Lanvers@LMIS.de
+ */
 @Embeddable
 public class Address {
 
+    /**
+     * Postleitzahl
+     */
     private int postalCode;
+
+    /**
+     * Ort
+     */
     private String place;
+
+    /**
+     * Straße
+     */
     private String street;
+
+    /**
+     * Hausnummer
+     */
     private String number;
 
     public String getNumber() {
-        return number;
+        return this.number;
     }
 
     public void setNumber(String number) {
@@ -19,7 +39,7 @@ public class Address {
     }
 
     public String getStreet() {
-        return street;
+        return this.street;
     }
 
     public void setStreet(String street) {
@@ -27,7 +47,7 @@ public class Address {
     }
 
     public String getPlace() {
-        return place;
+        return this.place;
     }
 
     public void setPlace(String place) {
@@ -35,7 +55,7 @@ public class Address {
     }
 
     public int getPostalCode() {
-        return postalCode;
+        return this.postalCode;
     }
 
     public void setPostalCode(int postalCode) {
