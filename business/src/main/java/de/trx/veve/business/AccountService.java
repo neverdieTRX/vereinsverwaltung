@@ -8,11 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -88,15 +86,22 @@ public class AccountService {
      * @param end    -
      * @return -
      */
-    public List<Statement> getStatementsByOptionalDates(Optional<LocalDate> beginn, Optional<LocalDate> end) {
+    public List<Statement> getStatementsByDates(LocalDateTime beginn, LocalDateTime end) {
         List<Statement> statements = this.accountRepository.findByIban(this.organisationIban).getStatements();
-        if (!beginn.isPresent() || end.isPresent()) {
-            return statements;
-        }
         return statements.stream()
-                .filter((statement) -> !(statement.getCreatedAt().isBefore(ChronoLocalDateTime.from(end.get())) ||
-                        statement.getCreatedAt().isAfter(ChronoLocalDateTime.from(beginn.get()))))
+                .filter((statement) -> AccountService.test(beginn, end, statement))
                 .collect(Collectors.toList());
+    }
+
+    private static boolean test(LocalDateTime beginn, LocalDateTime end, Statement statement) {
+        return (statement.getCreatedAt().isBefore(ChronoLocalDateTime.from(end)) ||
+                statement.getCreatedAt().toLocalDate().isEqual(end.toLocalDate())) &&
+                (statement.getCreatedAt().isAfter(ChronoLocalDateTime.from(beginn)) ||
+                        statement.getCreatedAt().toLocalDate().isEqual(beginn.toLocalDate()));
+    }
+
+    public List<Statement> getAllStatements() {
+        return this.accountRepository.findByIban(this.organisationIban).getStatements();
     }
 
     /**

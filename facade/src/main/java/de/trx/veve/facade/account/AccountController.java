@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -63,25 +63,39 @@ public class AccountController {
     @CrossOrigin
     @RequestMapping(value = "/statements", method = RequestMethod.GET)
     public List<StatementDTO> findStatements(@RequestParam("beginn") String beginn, @RequestParam("end") String end) {
-        List<Statement> statementsByOptionalDates = this.accountService.getStatementsByOptionalDates(this.formatDateString(beginn),
-                this.formatDateString(end));
+        List<Statement> statementsByOptionalDates = this.accountService.getStatementsByDates(
+                formatDateString(beginn),
+                formatDateString(end));
         return statementsByOptionalDates.stream()
                 .map((statement -> new StatementDTO(statement)))
                 .collect(Collectors.toList());
     }
 
+    @CrossOrigin
+    @RequestMapping(value = "/statements/all", method = RequestMethod.GET)
+    public List<StatementDTO> getAllStatements() {
+        List<Statement> statementsByOptionalDates = this.accountService.getAllStatements();
+        return statementsByOptionalDates.stream()
+                .map((statement -> new StatementDTO(statement)))
+                .collect(Collectors.toList());
+    }
+
+
     /**
-     * Formatiert einen String mit dem Pattern dd.MM.yyyy zu einem Localdate um.
+     * Formatiert einen String mit dem Pattern dd-MM-yyyy zu einem Localdate um.
      *
      * @param date -
      * @return -
      */
-    private static Optional<LocalDate> formatDateString(String date) {
+    private static LocalDateTime formatDateString(String date) {
         if (StringUtils.isNullOrEmpty(date)) {
-            return Optional.empty();
+            throw new IllegalArgumentException("date must be set");
         }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        return Optional.of(LocalDate.parse(date, formatter));
+//        date = date.replace("-", ".");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        LocalDate parse = LocalDate.parse(date, formatter);
+        System.out.println(parse.atStartOfDay());
+        return parse.atStartOfDay();
     }
 
 
