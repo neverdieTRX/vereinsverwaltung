@@ -35,10 +35,10 @@ public class AspectLogger {
         }
     }
 
-    @AfterReturning("execution(* de.trx.veve..facade..*(..)) || execution(* de.trx.veve..business..*(..))")
-    public static void monitorMethodExit(JoinPoint joinPoint) {
+    @AfterReturning(value = "execution(* de.trx.veve.facade..*(..)) || execution(* de.trx.veve.business..*(..))", returning = "returnValue")
+    public static void monitorMethodExit(JoinPoint joinPoint, Object returnValue) {
         Logger LOGGER = getLogger(joinPoint);
-        LOGGER.info("LEFT METHOD: " + joinPoint.getSignature().toLongString());
+        LOGGER.info("LEFT METHOD: " + joinPoint.getSignature().toLongString() + " with return value: " + returnValue);
     }
 
     private static Logger getLogger(JoinPoint joinPoint) {

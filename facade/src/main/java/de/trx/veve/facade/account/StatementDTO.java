@@ -11,15 +11,19 @@ class StatementDTO {
     private String createAt;
 
     @JsonProperty
-    private long createdBy;
+    private String createdByName;
+
+    @JsonProperty
+    private String createdByIBAN;
 
     @JsonProperty
     private double amount;
 
-    StatementDTO(Statement statement) {
+    StatementDTO(Statement statement, String createByName, String createdByIBAN) {
         this.createAt = statement.getCreatedAt().toString();
-        this.createdBy = statement.getCreatedBy();
         this.amount = statement.getAmount();
+        this.createdByIBAN = createdByIBAN;
+        this.createdByName = createByName;
     }
 
     public double getAmount() {
@@ -30,19 +34,27 @@ class StatementDTO {
         this.amount = amount;
     }
 
-    public long getCreatedBy() {
-        return this.createdBy;
-    }
-
-    public void setCreatedBy(long createdBy) {
-        this.createdBy = createdBy;
-    }
-
     public String getCreateAt() {
         return this.createAt;
     }
 
     public void setCreateAt(String createAt) {
         this.createAt = createAt;
+    }
+
+    public String getCreatedByName() {
+        return this.createdByName;
+    }
+
+    public void setCreatedByName(String createdByName) {
+        this.createdByName = createdByName;
+    }
+
+    public String getCreatedByIBAN() {
+        return this.createdByIBAN;
+    }
+
+    public void setCreatedByIBAN(String createdByIBAN) {
+        this.createdByIBAN = createdByIBAN;
     }
 }

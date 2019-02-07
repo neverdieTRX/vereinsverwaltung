@@ -1,7 +1,10 @@
 package de.trx.veve.facade.account;
 
 import de.trx.veve.business.AccountService;
+import de.trx.veve.business.UserService;
 import de.trx.veve.entity.Statement;
+import de.trx.veve.entity.User;
+import de.trx.veve.facade.exceptions.IllegalArgumentRestException;
 import org.h2.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,8 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 
 /**
@@ -25,10 +30,12 @@ import java.util.stream.Collectors;
 public class AccountController {
 
     private final AccountService accountService;
+    private final UserService userService;
 
     @Autowired
-    public AccountController(AccountService accountService) {
+    public AccountController(AccountService accountService, UserService userService) {
         this.accountService = accountService;
+        this.userService = userService;
     }
 
     /**
@@ -66,23 +73,32 @@ public class AccountController {
         List<Statement> statementsByOptionalDates = this.accountService.getStatementsByDates(
                 formatDateString(beginn),
                 formatDateString(end));
-        return statementsByOptionalDates.stream()
-                .map((statement -> new StatementDTO(statement)))
-                .collect(Collectors.toList());
+
+        return this.mapToDTO(statementsByOptionalDates);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/statements/all", method = RequestMethod.GET)
     public List<StatementDTO> getAllStatements() {
         List<Statement> statementsByOptionalDates = this.accountService.getAllStatements();
-        return statementsByOptionalDates.stream()
-                .map((statement -> new StatementDTO(statement)))
-                .collect(Collectors.toList());
+        return this.mapToDTO(statementsByOptionalDates);
     }
 
+    private List<StatementDTO> mapToDTO(List<Statement> statementsByOptionalDates) {
+        List<StatementDTO> statementDTOS = new ArrayList<>();
+        for (Statement statement : statementsByOptionalDates) {
+            Optional<User> dbUser = this.userService.findById(statement.getCreatedBy());
+            if (dbUser.isPresent()) {
+                statementDTOS.add(new StatementDTO(statement, dbUser.get().getName(), dbUser.get().getIban()));
+            } else {
+                statementDTOS.add(new StatementDTO(statement, "", ""));
+            }
+        }
+        return statementDTOS;
+    }
 
     /**
-     * Formatiert einen String mit dem Pattern dd-MM-yyyy zu einem Localdate um.
+     * Formatiert einen String mit dem Pattern yyyy-MM-dd zu einem Localdate um.
      *
      * @param date -
      * @return -
@@ -91,12 +107,13 @@ public class AccountController {
         if (StringUtils.isNullOrEmpty(date)) {
             throw new IllegalArgumentException("date must be set");
         }
-//        date = date.replace("-", ".");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        LocalDate parse = LocalDate.parse(date, formatter);
-        System.out.println(parse.atStartOfDay());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate parse;
+        try {
+            parse = LocalDate.parse(date, formatter);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentRestException("Could not parse date: " + date);
+        }
         return parse.atStartOfDay();
     }
-
-
 }
