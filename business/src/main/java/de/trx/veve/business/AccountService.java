@@ -45,7 +45,6 @@ public class AccountService {
     public void transferMonthly() {
         List<User> users = this.userService.findAll();
         users.stream().forEach(this::transferFeeOfUser);
-
     }
 
     private void transferFeeOfUser(User user) {
@@ -58,10 +57,6 @@ public class AccountService {
 
 
     private void acceptFee(Statement statement) {
-        if (statement == null) {
-            //TODO exception handeling
-            return;
-        }
         Account account = this.accountRepository.findByIban(this.organisationIban);
         account.addStatement(statement);
         account.setBalance(account.getBalance() + statement.getAmount());
@@ -76,7 +71,6 @@ public class AccountService {
     public double getOrganisationBalance() {
         Account account = this.accountRepository.findByIban(this.organisationIban);
         return account.getBalance();
-
     }
 
     /**
@@ -89,11 +83,11 @@ public class AccountService {
     public List<Statement> getStatementsByDates(LocalDateTime beginn, LocalDateTime end) {
         List<Statement> statements = this.accountRepository.findByIban(this.organisationIban).getStatements();
         return statements.stream()
-                .filter((statement) -> AccountService.test(beginn, end, statement))
+                .filter((statement) -> AccountService.this.filterStatement(beginn, end, statement))
                 .collect(Collectors.toList());
     }
 
-    private static boolean test(LocalDateTime beginn, LocalDateTime end, Statement statement) {
+    private boolean filterStatement(LocalDateTime beginn, LocalDateTime end, Statement statement) {
         return (statement.getCreatedAt().isBefore(ChronoLocalDateTime.from(end)) ||
                 statement.getCreatedAt().toLocalDate().isEqual(end.toLocalDate())) &&
                 (statement.getCreatedAt().isAfter(ChronoLocalDateTime.from(beginn)) ||
